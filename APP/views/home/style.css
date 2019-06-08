@@ -29,7 +29,7 @@ body{
 
 }
 
-.jumbotron .vertical{
+ .vertical{
     border-left: 1.4px solid #b5b5b5; 
     height: 15rem; 
     position:relative; 
@@ -37,7 +37,8 @@ body{
     top: 5%;
     width: 2px;
 }
-.btn{
+
+#loginButton {
 	position: relative;
 	margin-top: 5rem;
 	width: 210px;
@@ -51,8 +52,15 @@ body{
 
 .custom-file {
 	text-align: left;
+	width: 240px;
 	position: relative;
 	margin-top: 5rem;
+}
+
+#uploadButton {
+	margin-left: 20px;
+	box-shadow: 2px 2px 2px 2px #a5a5a5 ;
+	background-color: #3678e2;
 }
 
 h3{

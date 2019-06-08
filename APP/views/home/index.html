@@ -24,17 +24,19 @@
 				    <div class="col-sm" align="center">
 				    	  <h3>Upload your answer script</h3>	
 				    	  <div class="custom-file">
-						    <input type="file" class="custom-file-input" id="validatedCustomFile" required>
-						    <label class="custom-file-label" for="validatedCustomFile">Choose file...</label>
-						    <div class="invalid-feedback">Example invalid custom file feedback</div>
-						  </div>
+				    	  	<form action="/uploadIMG" method="post" enctype="multipart/form-data">
+							    <input type="file" class="custom-file-input" id="imageInput" name="image" required>
+							    <label class="custom-file-label" for="validatedCustomFile">Choose...</label>
+							    <input type="submit" name="submit" value="Upload" class="btn btn-primary" id="uploadButton">
+						    </form>
+						  </div>						  
 				    </div>
 				    <div class="col-sm-centercol">
 				          <div class = "vertical"></div> 
 				    </div>
 				    <div class="col-sm" align="center">
 				    	<h3>Admin login</h3>
-				    	<button type="button" class="btn btn-primary">Login</button>
+				    	<button type="button" id="loginButton" onclick="window.location.href = 'http://localhost:3000/admin';" class="btn btn-primary">Login</button>
 				    </div>
 				  </div>
 			  </div>
@@ -48,6 +50,7 @@
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 	<script type="text/javascript" src="script.js"></script>
 </body>
 </html>
