@@ -91,7 +91,7 @@ def findSynonyms(obj):
     return obj
     
 #______________MAIN______________     
-#Comparison
+#Comparison between two sentences
 def compare(sentence1,sentence2):
     obj1 = tagSentence(sentence1)
     obj2 = tagSentence(sentence2)
