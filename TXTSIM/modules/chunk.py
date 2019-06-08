@@ -170,4 +170,4 @@ def chunk(sent):
 			stringArr.append(' '.join(tokenArr))
 	return stringArr
 
-pri(chunk("I like bread and butter and eat a lot of food"))
+print(chunk("I like bread and butter and I eat a lot of food"))

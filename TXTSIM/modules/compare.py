@@ -196,8 +196,23 @@ def compare(obj1,obj2,sentence2):
             for word2 in obj2["X"]:
                 if(word1 == word2):
                     result["X"] += 1
+    tempObj = {
+        'NOUN':len(obj1['NOUN']),
+        'PROPN':len(obj1['PROPN']),
+        'PRON':len(obj1['PRON']),
+        'VERB':len(obj1['VERB']),
+        'ADJ':len(obj1['ADJ']),
+        'ADV':len(obj1['ADV']),
+        'SYM':len(obj1['SYM']),
+        'NUM':len(obj1['NUM']),
+        'X':len(obj1['X'])
+    }
+    res = {
+        'teachArr':tempObj,
+        'studArr':result
+    }
     #TUPLE UNPACK AND GET BOTH VALUES
-    return result,sentence2
+    return res,sentence2
 
 #Is active
 def is_active(sentence):
