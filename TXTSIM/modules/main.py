@@ -19,7 +19,7 @@ def compareMain(teach,student):
                     simScore*=0
                 if(checkOrderOfAdjective(teachObj['s'],sent2)==False):
                     simScore*=0.95              #################
-            if(simScore>0.4):                   #################
+                    if(simScore>0.4):           #################
                 teachObj['SIM'] = simScore
                 teachObj['c']=1
     #teach is an object with attribute 's' , 'c' and 'SIM' if matched(result)

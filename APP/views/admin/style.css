@@ -1,0 +1,39 @@
+html{
+	height: 100%;
+}
+body{
+	background-color: #b9d0f7;
+}
+.centercol {
+	width: 40px;
+}
+
+.midcol {
+	position: absolute;
+	width: 1000px;
+}
+
+.form-group{
+	width: 750px;
+}
+
+.jumbotron {
+	padding: 12px;
+	margin: 40px;
+	margin-left: 180px;
+	margin-right: auto;
+	display: block;
+	background-color: #ededed;
+	color: #3f3f3f;
+	box-shadow: 3px 5px 5px 4px #5b7a99 ;
+	align-items: center;
+}
+
+.btn{
+	position: relative;
+	margin-left: 316px;
+	width: 120px;
+	object-position: center;
+	box-shadow: 2px 2px 2px 2px #a5a5a5 ;
+	background-color: #3678e2;
+}
