@@ -1,4 +1,0 @@
-#DIMENSIONS
-
-2460 * 5330
-(60 img * 41 px) * (26 alpha * 41 px * 5 c)
