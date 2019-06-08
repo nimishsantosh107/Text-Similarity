@@ -15,17 +15,17 @@
 #   tagSentence
 #   reTagSentence
 #   findSynonyms
-#   compare
+#   compare - 
 #   is_active
 #   NCsplitOnVerb
-#   checkOrderOfNoun
+#   checkOrderOfNoun - 
 #   ACsplitOnVerb
-#   checkOrderOfAdjective
+#   checkOrderOfAdjective - 
 
 
 ##SPACY IMPORTS
 import spacy
-nlp = spacy.load("en_core_web_lg")
+nlp = spacy.load("en_core_web_sm")
 from spacy.matcher import Matcher
 matcher = Matcher(nlp.vocab)
 ##NLTK IMPORTS
@@ -89,9 +89,13 @@ def findSynonyms(obj):
                     tempArr.append(l.name())
         obj["X"] = list(set(obj["X"]+tempArr))
     return obj
-     
+    
+#______________MAIN______________     
 #Comparison
-def compare(obj1,obj2,sentence2):
+def compare(sentence1,sentence2):
+    obj1 = tagSentence(sentence1)
+    obj2 = tagSentence(sentence2)
+    obj2 = findSynonyms(obj2)
     #original object 2
     obj2a = reTagSentence(sentence2)
     result = {}
@@ -208,8 +212,8 @@ def compare(obj1,obj2,sentence2):
         'X':len(obj1['X'])
     }
     res = {
-        'teachArr':tempObj,
-        'studArr':result
+        'teachMark':tempObj,
+        'studMark':result
     }
     #TUPLE UNPACK AND GET BOTH VALUES
     return res,sentence2
@@ -242,6 +246,7 @@ def NCsplitOnVerb(sentence):
     sent["NP"] = [''.join(sorted(word)) for word in sent["NP"]]
     return sent
 
+#______________MAIN______________
 #Check order of appearance of a noun
 def checkOrderOfNoun(sent1,sent2):
     sent1obj = NCsplitOnVerb(sent1)
@@ -283,6 +288,7 @@ def ACsplitOnVerb(sentence):
     sent["NPA"] = [''.join(sorted(word)) for word in sent["NPA"]]
     return sent
 
+#______________MAIN______________     
 #Check order of appearance of an adjective
 def checkOrderOfAdjective(sent1,sent2):
     sent1obj = ACsplitOnVerb(sent1)
