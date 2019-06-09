@@ -1,0 +1,12 @@
+Sentence subject not relevant to answer
+ Photo synthesis is a physical reaction
+--sentence fully relevant to subject plants take in water
+--sentence fully relevant to subject plants take in carbon dioxide
+--sentence fully relevant to subject plants produce food
+--sentence fully relevant to subject plants give out oxygen
+--
+{"s": "Photosynthesis occurs in leaves of plants", "c": 0}
+{"s": "Plants take in carbondioxide", "c": 1, "SIM": 1.0}
+{"s": "Plants take in water", "c": 1, "SIM": 1.0}
+{"s": "Plants produce food", "c": 1, "SIM": 1.0}
+{"s": "Plants give out oxygen", "c": 1, "SIM": 1.0}

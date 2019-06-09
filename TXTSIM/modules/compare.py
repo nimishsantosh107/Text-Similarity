@@ -36,6 +36,7 @@ matcher = Matcher(nlp.vocab)
 from nltk.corpus import wordnet
 from num2words import num2words
 ##OTHER IMPORTS
+import json
 
 
 ###chunker.py
@@ -446,24 +447,48 @@ def is_active(sentence):
     else:
         return True
 
-#These sentences will be with replaced words for sent2 alone
-#For NOUN check
-#These sentences will be with replaced words for sent2 alone
-#For NOUN check
 def NCsplitOnVerb(sentence):
     sent = {}
+    flag=0
     doc = nlp(sentence)
+    print(sentence)
+    for tokenn in doc:
+        # if (token.lemma_=="be"):
+        #   l[0]="be"
+        # else:
+        #   l[0]=token.text
+        print(tokenn.text,tokenn.pos_)
     sent["TYPE"] = is_active(sentence)
-    sent["NPV"] = [token.lemma_.lower() for token in doc if token.pos_=="NOUN" 
-     or token.pos_=="PRON" 
-     or token.pos_=="PROPN"
-     or token.pos_=="VERB" and token.lemma_.lower()!="be"]
+    for token in doc:
+        if(token.pos_=="VERB"and token.lemma_.lower()!="be"):
+            flag=1
+    if(flag==1): #there are verbs other than be
+        sent["NPV"] = [token.lemma_.lower() for token in doc if token.pos_=="NOUN" 
+         or token.pos_=="PRON"  
+         or token.pos_=="PROPN"
+         or token.pos_=="VERB" and token.lemma_.lower()!="be"]
+        sent["V"] = [token.lemma_.lower() for token in doc if token.pos_=="VERB" and token.lemma_.lower()!="be"]
+    else:
+        sent["NPV"] = [token.lemma_.lower() for token in doc if token.pos_=="NOUN" 
+         or token.pos_=="PRON"  
+         or token.pos_=="PROPN"
+         or token.pos_=="VERB"]
+        sent["V"] = [token.lemma_.lower() for token in doc if token.pos_=="VERB"]
+
+      
+
     sent["NPV"] = ' '.join(sent["NPV"])
-    sent["V"] = [token.lemma_.lower() for token in doc if token.pos_=="VERB" and token.lemma_.lower()!="be"]
-    sent["NP"]= sent["NPV"].split(sent["V"][0])
+    try:
+        sent["NP"]= sent["NPV"].split(sent["V"][0])
+    except:
+        sent["NP"]= sent["NPV"]
+    
+    
     sent["NP"] = [word.replace(' ','') for word in sent["NP"]]
     sent["NP"] = [''.join(sorted(word)) for word in sent["NP"]]
+    print("finished")
     return sent
+
 #______________MAIN______________
 #Check order of appearance of a noun
 def checkOrderOfNoun(sent1,sent2):
@@ -500,7 +525,10 @@ def ACsplitOnVerb(sentence):
      or token.pos_=="VERB" and token.lemma_.lower()!="be"]
     sent["NPVA"] = ' '.join(sent["NPVA"])
     sent["V"] = [token.lemma_.lower() for token in doc if token.pos_=="VERB" and token.lemma_.lower()!="be"]
-    sent["NPA"]= sent["NPVA"].split(sent["V"][0])
+    try:
+        sent["NPA"]= sent["NPVA"].split(sent["V"][0])
+    except:
+        sent["NPA"]= sent["NPVA"]
     sent["NPA"] = [word.replace(' ','') for word in sent["NPA"]]
     sent["NPA"] = [''.join(sorted(word)) for word in sent["NPA"]]
     return sent
@@ -516,25 +544,35 @@ def checkOrderOfAdjective(sent1,sent2):
         try:
             index2.append(sent2obj["NPA"].index(sent1obj["NPA"][i]))
         except:
-            return False
+            return (False,),sent1obj['NPA'][index1[i]]
     if(sent1obj["TYPE"]==sent2obj["TYPE"]):
         #len(index1) = len(index2)
         for i in range(len(index1)):
             if(index1[i]!=index2[i]):
-                return False
-        return True
+                return (False,),sent1obj['NPA'][index1[i]]
+        return (True,),"dummy"
     elif(sent1obj["TYPE"]!=sent2obj["TYPE"]):
         for i in range(len(index1)):
             if(index1[i]==index2[i]):
-                return False
-        return True 
+                return (False,),sent1obj['NPA'][index1[i]]
+        return (True,),"dummy"
 
 
 #teach and student are array of sentences
 #AFTER CHUNKING
 ######## ADJUST SIM SCORE MULTIPLICATION
+
 def compareMain(teach,student):
+    f = open('feedback.txt','w+')
     arr=[]
+    dicti = {}
+    feedback = {}
+    missing = {}
+
+    for i in range(len(student)):
+        dicti[i] = 0
+        feedback[i]="Sentence subject not relevant to answer\n" 
+
     for i in range(len(teach)):
         obj={}
         obj['s']=teach[i]
@@ -542,16 +580,39 @@ def compareMain(teach,student):
         arr.append(obj)
     teach = arr
     for teachObj in teach:
+        counter = 0
+        f = open('feedback.txt','w+')
         for sent in student:
             res , sent2 = compare(teachObj['s'],sent)
             simScore = simCheck(res)
             if(res['teachMark']['VERB']>0):
                 if(checkOrderOfNoun(teachObj['s'],sent2)==False):
                     simScore*=0
-                if(checkOrderOfAdjective(teachObj['s'],sent2)==False):
-                    simScore*=0.95              #################
+                val1,val2=checkOrderOfAdjective(teachObj['s'],sent2)
+                if(val1==False):
+                    simScore*=0.95          #################
                 if(simScore>0.4):           #################
                     teachObj['SIM'] = simScore
                     teachObj['c']=1
+                    if(simScore>dicti[counter]):
+                        dicti[counter] = simScore
+                        if(simScore!=1):
+                            feedback[counter] = "Missing adjective or modifier"
+                            missing[counter] = val2
+                        else:
+                            feedback[counter] = "sentence fully relevant to subject"
+
     #teach is an object with attribute 's' , 'c' and 'SIM' if matched(result)
-    return teach
+            counter+=1
+    for i in range(len(student)):
+        if(feedback[i]=="Sentence subject not relevant to answer"):
+            f.write(feedback[i]+': '+student[i]+'\n--')
+        elif(feedback[i] == "Missing adjective or modifier"):
+            f.write(feedback[i]+" in "+student[i]+"Required: "+missing[i]+ '\n--')
+        else:
+            f.write(feedback[i]+' '+student[i]+'\n--')
+    for i in range (len(teach)):
+        f.write('\n')
+        f.write(json.dumps(teach[i]));
+
+    f.close()
