@@ -10,6 +10,7 @@ const client = new vision.ImageAnnotatorClient();
 const cloudinary = require('cloudinary').v2;
 const multer  = require('multer');
 const Datauri = require('datauri');
+const axios = require('axios');
 
 var storage = multer.memoryStorage()
 var upload = multer({ storage: storage })
@@ -69,7 +70,17 @@ app.use(bodyParser.json());
 	        const [result] = await client.documentTextDetection(imageURL);
 			const fullTextAnnotation = result.fullTextAnnotation;
 			console.log(`Full text: ${fullTextAnnotation.text}`);
-			res.status(200).send(fullTextAnnotation.text);
+			axios.post('http://127.0.0.1:5000/python', {
+			    teach: result.fullTextAnnotation.text,
+			    stud: result.fullTextAnnotation.text
+			 }).then(function (response) {
+			    console.log(response);
+			    res.status(200).send(response);
+			 }).catch(function (error) {
+			    console.log(error);
+			    res.status(418).send(error);
+			 });
+			
 	    }
 		else res.status(418).send('NO FILE');
 	});
