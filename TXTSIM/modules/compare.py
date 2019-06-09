@@ -12,6 +12,9 @@
 #     X: other
 
 #LIST OF FUNCTIONS:
+#   resolve_co_reference
+#   chunk ----
+#   simCheck
 #   tagSentence
 #   reTagSentence
 #   findSynonyms
@@ -21,6 +24,7 @@
 #   checkOrderOfNoun - 
 #   ACsplitOnVerb
 #   checkOrderOfAdjective - 
+#   compareMain
 
 
 ##SPACY IMPORTS
@@ -443,17 +447,44 @@ def is_active(sentence):
 #For NOUN check
 def NCsplitOnVerb(sentence):
     sent = {}
+    flag=0
     doc = nlp(sentence)
+    print(sentence)
+    for tokenn in doc:
+        # if (token.lemma_=="be"):
+        #   l[0]="be"
+        # else:
+        #   l[0]=token.text
+        print(tokenn.text,tokenn.pos_)
     sent["TYPE"] = is_active(sentence)
-    sent["NPV"] = [token.lemma_.lower() for token in doc if token.pos_=="NOUN" 
-     or token.pos_=="PRON" 
-     or token.pos_=="PROPN"
-     or token.pos_=="VERB" and token.lemma_.lower()!="be"]
+    for token in doc:
+        if(token.pos_=="VERB"and token.lemma_.lower()!="be"):
+            flag=1
+    if(flag==1): #there are verbs other than be
+        sent["NPV"] = [token.lemma_.lower() for token in doc if token.pos_=="NOUN" 
+         or token.pos_=="PRON"  
+         or token.pos_=="PROPN"
+         or token.pos_=="VERB" and token.lemma_.lower()!="be"]
+        sent["V"] = [token.lemma_.lower() for token in doc if token.pos_=="VERB" and token.lemma_.lower()!="be"]
+    else:
+        sent["NPV"] = [token.lemma_.lower() for token in doc if token.pos_=="NOUN" 
+         or token.pos_=="PRON"  
+         or token.pos_=="PROPN"
+         or token.pos_=="VERB"]
+        sent["V"] = [token.lemma_.lower() for token in doc if token.pos_=="VERB"]
+
+      
+
     sent["NPV"] = ' '.join(sent["NPV"])
-    sent["V"] = [token.lemma_.lower() for token in doc if token.pos_=="VERB" and token.lemma_.lower()!="be"]
-    sent["NP"]= sent["NPV"].split(sent["V"][0])
+    try:
+        sent["NP"]= sent["NPV"].split(sent["V"][0])
+    except:
+        sent["NP"]= sent["NPV"]
+    
+    
     sent["NP"] = [word.replace(' ','') for word in sent["NP"]]
     sent["NP"] = [''.join(sorted(word)) for word in sent["NP"]]
+    print("finished")
     return sent
 
 #______________MAIN______________
@@ -484,6 +515,7 @@ def checkOrderOfNoun(sent1,sent2):
 #For ADJ check
 def ACsplitOnVerb(sentence):
     sent = {}
+    flag=0
     doc = nlp(sentence)
     sent["TYPE"] = is_active(sentence)
     sent["NPVA"] = [token.lemma_.lower() for token in doc if token.pos_=="NOUN" 
@@ -492,8 +524,18 @@ def ACsplitOnVerb(sentence):
      or token.pos_=="ADJ"
      or token.pos_=="VERB" and token.lemma_.lower()!="be"]
     sent["NPVA"] = ' '.join(sent["NPVA"])
-    sent["V"] = [token.lemma_.lower() for token in doc if token.pos_=="VERB" and token.lemma_.lower()!="be"]
-    sent["NPA"]= sent["NPVA"].split(sent["V"][0])
+    for token in doc:
+        if(token.pos_=="VERB" and token.lemma_.lower()!="be"):
+            flag=1
+    if(flag==1):
+        sent["V"] = [token.lemma_.lower() for token in doc if token.pos_=="VERB" and token.lemma_.lower()!="be"]
+    else:
+        sent["V"] = [token.lemma_.lower() for token in doc if token.pos_=="VERB"]
+    try:
+        sent["NPA"]= sent["NPVA"].split(sent["V"][0])
+    except:
+        sent["NPA"]= sent["NPVA"]
+
     sent["NPA"] = [word.replace(' ','') for word in sent["NPA"]]
     sent["NPA"] = [''.join(sorted(word)) for word in sent["NPA"]]
     return sent
