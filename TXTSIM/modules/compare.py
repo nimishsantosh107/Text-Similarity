@@ -235,6 +235,9 @@ def simCheck(obj, studSum=0 ,teachSum=0):
     FACT = {'NOUN': 1, 'PROPN': 1, 'PRON':1, 'VERB': 1, 'ADJ': 0.3, 'ADV': 0.3, 'SYM':1 ,'NUM': 1}
     teachMark = obj['teachMark']
     studMark = obj['studMark']
+    print(teachMark)
+    print('\n------')
+    print(studMark)
     for key in teachMark:
         if(teachMark[key]!=0):
             try:
@@ -445,48 +448,22 @@ def is_active(sentence):
 
 #These sentences will be with replaced words for sent2 alone
 #For NOUN check
+#These sentences will be with replaced words for sent2 alone
+#For NOUN check
 def NCsplitOnVerb(sentence):
     sent = {}
-    flag=0
     doc = nlp(sentence)
-    print(sentence)
-    for tokenn in doc:
-        # if (token.lemma_=="be"):
-        #   l[0]="be"
-        # else:
-        #   l[0]=token.text
-        print(tokenn.text,tokenn.pos_)
     sent["TYPE"] = is_active(sentence)
-    for token in doc:
-        if(token.pos_=="VERB"and token.lemma_.lower()!="be"):
-            flag=1
-    if(flag==1): #there are verbs other than be
-        sent["NPV"] = [token.lemma_.lower() for token in doc if token.pos_=="NOUN" 
-         or token.pos_=="PRON"  
-         or token.pos_=="PROPN"
-         or token.pos_=="VERB" and token.lemma_.lower()!="be"]
-        sent["V"] = [token.lemma_.lower() for token in doc if token.pos_=="VERB" and token.lemma_.lower()!="be"]
-    else:
-        sent["NPV"] = [token.lemma_.lower() for token in doc if token.pos_=="NOUN" 
-         or token.pos_=="PRON"  
-         or token.pos_=="PROPN"
-         or token.pos_=="VERB"]
-        sent["V"] = [token.lemma_.lower() for token in doc if token.pos_=="VERB"]
-
-      
-
+    sent["NPV"] = [token.lemma_.lower() for token in doc if token.pos_=="NOUN" 
+     or token.pos_=="PRON" 
+     or token.pos_=="PROPN"
+     or token.pos_=="VERB" and token.lemma_.lower()!="be"]
     sent["NPV"] = ' '.join(sent["NPV"])
-    try:
-        sent["NP"]= sent["NPV"].split(sent["V"][0])
-    except:
-        sent["NP"]= sent["NPV"]
-    
-    
+    sent["V"] = [token.lemma_.lower() for token in doc if token.pos_=="VERB" and token.lemma_.lower()!="be"]
+    sent["NP"]= sent["NPV"].split(sent["V"][0])
     sent["NP"] = [word.replace(' ','') for word in sent["NP"]]
     sent["NP"] = [''.join(sorted(word)) for word in sent["NP"]]
-    print("finished")
     return sent
-
 #______________MAIN______________
 #Check order of appearance of a noun
 def checkOrderOfNoun(sent1,sent2):
@@ -511,11 +488,9 @@ def checkOrderOfNoun(sent1,sent2):
             if(index1[i]==index2[i]):
                 return False
         return True
-
 #For ADJ check
 def ACsplitOnVerb(sentence):
     sent = {}
-    flag=0
     doc = nlp(sentence)
     sent["TYPE"] = is_active(sentence)
     sent["NPVA"] = [token.lemma_.lower() for token in doc if token.pos_=="NOUN" 
@@ -524,22 +499,11 @@ def ACsplitOnVerb(sentence):
      or token.pos_=="ADJ"
      or token.pos_=="VERB" and token.lemma_.lower()!="be"]
     sent["NPVA"] = ' '.join(sent["NPVA"])
-    for token in doc:
-        if(token.pos_=="VERB" and token.lemma_.lower()!="be"):
-            flag=1
-    if(flag==1):
-        sent["V"] = [token.lemma_.lower() for token in doc if token.pos_=="VERB" and token.lemma_.lower()!="be"]
-    else:
-        sent["V"] = [token.lemma_.lower() for token in doc if token.pos_=="VERB"]
-    try:
-        sent["NPA"]= sent["NPVA"].split(sent["V"][0])
-    except:
-        sent["NPA"]= sent["NPVA"]
-
+    sent["V"] = [token.lemma_.lower() for token in doc if token.pos_=="VERB" and token.lemma_.lower()!="be"]
+    sent["NPA"]= sent["NPVA"].split(sent["V"][0])
     sent["NPA"] = [word.replace(' ','') for word in sent["NPA"]]
     sent["NPA"] = [''.join(sorted(word)) for word in sent["NPA"]]
     return sent
-
 #______________MAIN______________     
 #Check order of appearance of an adjective
 def checkOrderOfAdjective(sent1,sent2):
@@ -563,8 +527,7 @@ def checkOrderOfAdjective(sent1,sent2):
         for i in range(len(index1)):
             if(index1[i]==index2[i]):
                 return False
-        return True
-
+        return True 
 
 
 #teach and student are array of sentences

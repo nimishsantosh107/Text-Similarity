@@ -11,6 +11,9 @@ const cloudinary = require('cloudinary').v2;
 const multer  = require('multer');
 const Datauri = require('datauri');
 const axios = require('axios');
+const CircularJSON = require('circular-json');
+const request = require('request');
+
 
 var storage = multer.memoryStorage()
 var upload = multer({ storage: storage })
@@ -27,7 +30,7 @@ cloudinary.config({
 
 var app = express();
 var server = http.createServer(app);
-app.use(bodyParser.json());
+//app.use(bodyParser.json());
 
 //UI ROUTES
 	app.use('/',express.static(path.join(__dirname,'/views/home')));
@@ -36,7 +39,7 @@ app.use(bodyParser.json());
 
 
 //DB ROUTES
-	app.post('/postDB',async (req,res)=>{
+	app.post('/postDB',bodyParser.json(),async (req,res ,next)=>{
 		var obj = req.body;
 		for(var i=0;i<3;i++){
 			var newQuestion = new Question({
@@ -68,18 +71,38 @@ app.use(bodyParser.json());
 	        const resultData = await cloudinary.uploader.upload(file);
 	        imageURL = resultData.secure_url;
 	        const [result] = await client.documentTextDetection(imageURL);
-			const fullTextAnnotation = result.fullTextAnnotation;
-			console.log(`Full text: ${fullTextAnnotation.text}`);
-			axios.post('http://127.0.0.1:5000/python', {
-			    teach: result.fullTextAnnotation.text,
-			    stud: result.fullTextAnnotation.text
-			 }).then(function (response) {
-			    console.log(response);
-			    res.status(200).send(response);
-			 }).catch(function (error) {
+			var fullText = result.fullTextAnnotation.text;
+			fullText = fullText.replace('\n','');
+			console.log(fullText);
+
+			var finalArr = []
+			
+			await axios.get('http://localhost:3000/getDB').then(function (response) {
+			    response = response.data;
+			    var reqObject = {
+			    	teach: response[0].answer,
+			    	stud: fullText
+			    }
+			    
+			    reqObject = JSON.stringify(reqObject);
+				axios({
+				    method: 'post',
+				    url: 'http://127.0.0.1:5000/python',
+				    data: reqObject,
+				    headers: {'Content-Type': 'application/json'}
+				})
+				.then(function (response) {
+				    console.log(response.data[0]);
+				    finalArr.push(response.data[0]);
+				    res.status(200).send(finalArr);
+				})
+				.catch(function (error) {
+				    console.log(error);
+				});
+			}).catch(function (error) {
 			    console.log(error);
-			    res.status(418).send(error);
-			 });
+			});
+
 			
 	    }
 		else res.status(418).send('NO FILE');
