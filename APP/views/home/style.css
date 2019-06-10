@@ -23,7 +23,7 @@ body{
 	padding: 12px;
 	margin: 40px;
 	width: 50rem;
-	height: 18rem;
+	height: 25rem;
 	background-color: #ededed;
 	color: #3f3f3f;
 	box-shadow: 3px 5px 5px 4px #5b7a99 ;
@@ -31,7 +31,7 @@ body{
 
  .vertical{
     border-left: 1.4px solid #b5b5b5; 
-    height: 15rem; 
+    height: 19rem; 
     position:relative; 
     left: 50%; 
     top: 5%;
@@ -40,7 +40,7 @@ body{
 
 #loginButton {
 	position: relative;
-	margin-top: 5rem;
+	margin-top: 7rem;
 	width: 210px;
 	box-shadow: 2px 2px 2px 2px #a5a5a5 ;
 	background-color: #3678e2;
@@ -59,8 +59,9 @@ body{
 }
 
 #uploadButton {
-	position: relative;
-	margin-left: 10px;
+	margin-top: 20px;
+	position: absolute;
+	margin-left: 125px;
 	box-shadow: 2px 2px 2px 2px #a5a5a5 ;
 	background-color: #3678e2;
 }

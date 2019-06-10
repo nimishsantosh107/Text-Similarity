@@ -37,6 +37,17 @@ var server = http.createServer(app);
 
 	app.use('/admin',express.static(path.join(__dirname,'/views/admin')));
 
+	app.get('/results',(req,res)=>{
+		f = fs.readFile('/Users/nimish/Desktop/Angel/TXTSIM/feedback.txt',function read(err, data){
+		if (err){ 
+			throw err;
+			res.status(418).send(err);
+		}
+ 		res.status(200).send(data);
+	});
+		
+	});
+
 
 //DB ROUTES
 	app.post('/postDB',bodyParser.json(),async (req,res ,next)=>{
@@ -57,7 +68,7 @@ var server = http.createServer(app);
 	});
 
 	app.get('/getDB',(req,res)=>{
-		Question.find({}).then(
+		Question.findOne({__v:0}).then(
 			(questions)=>{console.log(questions);res.status(200).send(questions);},
 			(err)=>{console.log(err);res.status(418).send(err);}
 		);
@@ -72,15 +83,13 @@ var server = http.createServer(app);
 	        imageURL = resultData.secure_url;
 	        const [result] = await client.documentTextDetection(imageURL);
 			var fullText = result.fullTextAnnotation.text;
-			fullText = fullText.replace('\n','');
+			fullText = fullText.replace(/\n/g,' ');
 			console.log(fullText);
 
-			var finalArr = []
 			
 			await axios.get('http://localhost:3000/getDB').then(function (response) {
-			    response = response.data;
 			    var reqObject = {
-			    	teach: response[0].answer,
+			    	teach: response.data.answer,
 			    	stud: fullText
 			    }
 			    
@@ -93,14 +102,16 @@ var server = http.createServer(app);
 				})
 				.then(function (response) {
 				    console.log(response.data[0]);
-				    finalArr.push(response.data[0]);
-				    res.status(200).send(finalArr);
+				    res.redirect('/results');
+
 				})
 				.catch(function (error) {
 				    console.log(error);
+				    res.status(418).send('BAD');
 				});
 			}).catch(function (error) {
 			    console.log(error);
+			    res.status(418).send('BAD AF');
 			});
 
 			
